@@ -101,7 +101,8 @@
   },
   "scripts": {
     "start": "nps",
-    "test": "nps test"
+    "test": "nps test",
+    "build": "nps build"
   },
   "main": "dist/app.bundle.js"
 }
