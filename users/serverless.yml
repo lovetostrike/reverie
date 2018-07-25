@@ -1,0 +1,19 @@
+service:
+  name: users 
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+
+functions:
+  get:
+    handler: handler.get
+    events:
+      - http:
+          method: get
+          path: get
