@@ -1,4 +1,7 @@
 export default {
+  app: {
+    name: 'Reverie'
+  },
   debug: true,
   testing: true,
   cognito: {
