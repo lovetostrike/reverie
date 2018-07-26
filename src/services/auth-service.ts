@@ -1,7 +1,33 @@
 import { Router, NavigationInstruction } from 'aurelia-router'
-import { Auth } from 'aws-amplify'
+import Amplify, { Auth } from 'aws-amplify'
 import { User } from 'aws-sdk/clients/iam'
-import { inject, autoinject } from 'aurelia-framework'
+import { inject, autoinject, FrameworkConfiguration } from 'aurelia-framework'
+
+let authUrl;
+
+export function configure(config: FrameworkConfiguration, options: any) {
+  Amplify.configure({
+    Auth: {
+      mandatorySignIn: true,
+      region: options.cognito.REGION,
+      userPoolId: options.cognito.USER_POOL_ID,
+      identityPoolId: options.cognito.IDENTITY_POOL_ID,
+      userPoolWebClientId: options.cognito.APP_CLIENT_ID,
+      oauth: options.oauth
+    },
+    Analytics: {
+      disabled: true
+    }
+  })
+  const {
+    domain,
+    redirectSignIn,
+    redirectSignOut,
+    responseType
+  } = options.oauth
+  const clientId = options.cognito.APP_CLIENT_ID
+  authUrl = 'https://' + domain + '/login?redirect_uri=' + redirectSignIn + '&response_type=' + responseType + '&client_id=' + clientId 
+}
 
 @autoinject
 export class AuthService {
@@ -12,14 +38,8 @@ export class AuthService {
 
   constructor(private router: Router) {
     this._user = null
-    Auth.currentAuthenticatedUser().then(user => { this._user = user })
-      .catch(e => console.error())
-  }
-
-  async signIn(username: string, password: string, successCallback: Function = () => { }, errorCallback: Function = () => { }): Promise<void> {
-    this._isSigningIn = true
-    try {
-      this._user = await Auth.signIn(username, password)
+    Auth.currentAuthenticatedUser().then(user => {
+      this._user = user
       if (this.targetNavInstruction) {
         const targetUrl = this.targetNavInstruction.router.generate(
           this.targetNavInstruction.config.name,
@@ -31,25 +51,18 @@ export class AuthService {
       } else {
         this.router.navigateToRoute('home')
       }
-      successCallback(this._user)
-    } catch (e) {
-      errorCallback(e)
-    } finally {
-      this._isSigningIn = false
-    }
+    })
+      .catch(e => console.error())
   }
 
-  async signOut(successCallback: Function = () => { }, errorCallback: Function = () => { }) {
-    this._isSigningOut = true
-    try {
-      await Auth.signOut()
-      this._user = null
-      successCallback()
-    } catch (e) {
-      console.error(e.message)
-    } finally {
-      this._isSigningOut = false
-    }
+  renderForm() {
+    Auth.currentAuthenticatedUser().then(user => {
+      if (!user) {
+        window.location.assign(authUrl)
+      } else {
+        this.router.navigateToRoute('home')
+      }  
+    })
   }
 
   get user(): User {

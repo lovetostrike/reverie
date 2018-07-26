@@ -1,6 +1,7 @@
 import { PLATFORM } from 'aurelia-pal'
+import { RouteConfig } from 'aurelia-router';
 
-export const routes: any[] = [
+export const routes: RouteConfig[] = [
   {
     route: [
       '',
@@ -9,9 +10,20 @@ export const routes: any[] = [
     name: 'home',
     moduleId: PLATFORM.moduleName('pages/home-page'),
     nav: true,
-    title: 'Home',
+    title: 'Home'
+  },
+  {
+    route: ['login', 'signin'],
+    moduleId: PLATFORM.moduleName('pages/login-page'),
+    nav: true,
+    title: 'Login/Signin',
     settings: {
-      auth: true
+      auth: false
     }
   }
-]
+].map(route => ({
+  settings: {
+    auth: true
+  },
+  ...route
+}))

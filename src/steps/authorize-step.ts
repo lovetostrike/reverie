@@ -11,12 +11,12 @@ export class AuthorizeStep {
     if (navigationInstruction.getAllInstructions().some(i => i.config.settings.auth)) {
       if (!isLoggedIn) {
         this.authService.targetNavInstruction = navigationInstruction
-        return next.cancel(new RedirectToRoute('login'))
+        return next.cancel(new Redirect('login'))
       }
     }
 
     if (navigationInstruction.config.name === 'login' && isLoggedIn) {
-      return next.cancel(new RedirectToRoute('home'))
+      return next.cancel(new Redirect('home'))
     }
 
     return next()

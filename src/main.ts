@@ -1,3 +1,4 @@
+import { configure as AuthService } from './services/auth-service';
 /// <reference types="aurelia-loader-webpack/src/webpack-hot-interface"/>
 // we want font-awesome to load as soon as possible to show the fa-spinner
 import {Aurelia} from 'aurelia-framework'
@@ -11,7 +12,7 @@ Bluebird.config({ warnings: { wForgottenReturn: false } });
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
-    .feature(PLATFORM.moduleName('services/index'), environment);
+    .feature(AuthService, environment);
 
   // Uncomment the line below to enable animation.
   // aurelia.use.plugin(PLATFORM.moduleName('aurelia-animator-css'));
